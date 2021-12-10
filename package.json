@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@polkadot/api": "^6.11.1",
+    "@polkadot/ui-keyring": "^0.87.5",
+    "@polkadot/util": "^8.1.2",
+    "@reef-defi/api": "^1.0.3",
+    "@reef-defi/type-definitions": "^1.0.3",
+    "@reef-defi/types": "^1.0.3",
+    "big-number": "^2.0.0",
+    "bignumber": "^1.1.0",
+    "prompts": "^2.4.2",
+    "yargs": "^17.3.0"
+  }
+}
