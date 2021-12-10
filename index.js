@@ -44,7 +44,7 @@ const main = async () => {
 	process.exit(1);
     }
 
-    console.log("\n\x1b[45m\x1b[1m Getting data from Reef Chain \x1b[0m\n");
+    console.log(`\n\x1b[45m\x1b[1m Getting data from Reef Chain \x1b[41m\x1b[1m(${chain})\x1b[0m\n`);
     console.log(`\x1b[1m -> Connecting to\x1b[0m`, wsProvider);
     const provider = new WsProvider(wsProvider);
     const api = await ApiPromise.create({ provider, types });
