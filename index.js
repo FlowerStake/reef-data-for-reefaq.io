@@ -1,4 +1,4 @@
-/**
+/*
  * Multiple query to get data from Reef Chain
  * By Jimi Flowers (12/2021)
  */
@@ -11,11 +11,11 @@
  keyring.initKeyring({
    isDevelopment: false,
  });
- 
+
  const fs = require('fs');
  const prompts = require('prompts');
  const yargs = require('yargs');
- const wsProvider = "wss://rpc.reefscan.com/ws";
+ const wsProvider = "wss://rpc-testnet.reefscan.com/ws";
 
 const main = async () => {
 
@@ -59,23 +59,47 @@ const main = async () => {
 
     console.log(`\x1b[1m -> Era points distribution per Validator:\x1b[0m`);
 
+    const DATA = [];
+
     for (let [key,value] of activeValidatorSet) {
-        var address = JSON.stringify(key);
-        var points = JSON.stringify(value);
-        var validatorData = await api.query.staking.validators(JSON.parse(address));
-        var commission = JSON.stringify(validatorData.commission.toHuman());
-        console.log(`\x09\x1b[1m Validator: \x1b[0m\x1b[1;32m${address}\x1b[0m\x1b[0m\x1b[1m Points: \x1b[0m\x1b[1;32m${points}\x1b[0m\x1b[1m Commission: \x1b[0m\x1b[1;32m${commission}\x1b[0m`);
+        var address = JSON.parse(JSON.stringify(key));
+        var pts = JSON.parse(JSON.stringify(value));
+        var validatorData = await api.query.staking.validators(address);
+        var commission = JSON.parse(JSON.stringify(validatorData.commission.toHuman()));
+        //console.log(`\x09\x1b[1m Validator: \x1b[0m\x1b[1;32m${address}\x1b[0m\x1b[0m\x1b[1m Points: \x1b[0m\x1b[1;32m${points}\x1b[0m\x1b[1m Commission: \x1b[0m\x1b[1;32m${commission}\x1b[0m`);
+	DATA[address] = {}
+	DATA[address].points = pts;
+	DATA[address].percent = commission;
     }
 
-    // Exposures
-	const exposures = await api.query.staking.erasStakersClipped.entries(lastEra);
+    const exposures = await api.query.staking.erasStakersClipped.entries(lastEra);
 
-	//exposures.forEach(([key, exposure]) => {
-	  //console.log('key arguments:', key.args.map((k) => k.toHuman()));
-	  //console.log('     exposure:', exposure.toHuman());
-	//});
+    for (let [key,values] of exposures) {
+	data1 = key.toHuman();
+	const address = data1[1];
+	for (let [key,value] of values) {
+	    var min = 0;
+	    var mindata = 0;
+            if (key == "others") {
+		value.forEach(function(o, i){
+		    if (min == 0) {
+			min = JSON.parse(o.value);
+		        mindata = JSON.stringify(o.value.toHuman());
+		    }else{
+			if (min > o.value) {
+			    mindata = JSON.stringify(o.value.toHuman());
+			}
+		    }
+		});
+            }
+        }
+	DATA[address].minbond = JSON.parse(mindata);
+    }
+
+    console.log(DATA);
 
     process.exit(0);
+
 }
 
 try {
