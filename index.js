@@ -7,6 +7,7 @@
  const keyring = require('@polkadot/ui-keyring').default;
  const { types } = require('@reef-defi/types');
  const BigNumber = require('bignumber.js');
+ var wsProvider = "";
 
  keyring.initKeyring({
    isDevelopment: false,
@@ -15,9 +16,33 @@
  const fs = require('fs');
  const prompts = require('prompts');
  const yargs = require('yargs');
- const wsProvider = "wss://rpc-testnet.reefscan.com/ws";
+
+const argv = yargs
+  .scriptName("index.js")
+  .option('chain', {
+    alias: 'c',
+    description: 'chain (network) target to get data. Can be mainnet or testnet',
+    type: 'string',
+  })
+  .usage("node index.js")
+  .help()
+  .alias('help', 'h')
+  .version()
+  .alias('version', 'V')
+  .argv;
+
+let chain = argv.chain || "testnet";
 
 const main = async () => {
+
+    if (chain == "mainnet") {
+	wsProvider = "wss://rpc.reefscan.com/ws";
+    }else if (chain == "testnet") {
+	wsProvider = "wss://rpc-testnet.reefscan.com/ws";
+    } else {
+	console.log("Target Chain must be [testnet|mainnet]. Default: testnet");
+	process.exit(1);
+    }
 
     console.log("\n\x1b[45m\x1b[1m Getting data from Reef Chain \x1b[0m\n");
     console.log(`\x1b[1m -> Connecting to\x1b[0m`, wsProvider);

@@ -2,7 +2,7 @@
 
 Get data from Reef Chain to be used on reefaq.io staking calculator
 
-Made with ❤️ frrom FlowerStake by Jimi Flowers
+Made with ❤️  from https:://flowerstake.io (by Jimi Flowers) to https://reefaq.io
 
 ## Install
 
