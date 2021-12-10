@@ -21,5 +21,7 @@ yarn
 Using parameters:
 
 ```
-node index.js
+node index.js -c target_chain
+
+target_chain must be "testnet" or "mainnet". Default is "testnet".
 ```
