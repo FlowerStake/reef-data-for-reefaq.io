@@ -108,6 +108,7 @@ const main = async () => {
     var ident = "";
 
     for (let [key,value] of activeValidatorSet) {
+	var total = 0;
         address = JSON.parse(JSON.stringify(key));
         pts = JSON.parse(JSON.stringify(value));
         var validatorData = await api.query.staking.validators(address);
@@ -136,7 +137,9 @@ const main = async () => {
 		        }
 	            }
 	        });
-            }
+            } else if (key == "total") {
+		total = JSON.stringify(values.toHuman());
+	    }
         }
 
         CurrentVal = {
@@ -144,6 +147,7 @@ const main = async () => {
             Identity: ident,
             LastEraPoints: pts,
             ActualCommission: percent,
+	    TotalBonded: JSON.parse(total),
 	    LessNominatorStake: JSON.parse(mindata)
 	}
 
@@ -160,7 +164,7 @@ const main = async () => {
 
     console.log(DATA);
 
-    console.log(`\n\t\x1b[47m\x1b[32m\x1b[1m Data writed to file \x1b[32m\x1b[1mDATA.json\x1b[0m\n`);
+    console.log(`\n\t\x1b[47m\x1b[34m\x1b[1m Data writed to file \x1b[31m\x1b[1mDATA.json\x1b[0m\n`);
 
     process.exit(0);
 
