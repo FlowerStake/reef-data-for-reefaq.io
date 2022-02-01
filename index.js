@@ -103,6 +103,7 @@ const main = async () => {
     DATA['activeEra'] = activeEra;
     DATA['activeValidators'] = activeValidators;
     DATA['bondedTotal'] = bondedTotal;
+    DATA['rewardsTotal'] = rewardsTotal;
     DATA['lastEraPoints'] = totalEraPoints;
     DATA['Validators'] = [];
 
