@@ -63,7 +63,7 @@ const main = async () => {
     const chainActiveEra = await api.query.staking.activeEra();
     const activeEra = JSON.parse(JSON.stringify(chainActiveEra)).index;
     const lastEra = activeEra - 1;
-    console.log(`\x1b[1m -> Actual Era is \x1b[0m\x1b[1;32m${activeEra}\x1b[0m`);
+    console.log(`\x1b[1m -> Active Era is \x1b[0m\x1b[1;32m${activeEra}\x1b[0m`);
 
     // Get number of Validators
     const activeValidatorsObj = await api.query.staking.validatorCount();
@@ -73,12 +73,16 @@ const main = async () => {
     // Get total bonded Tokens for era
     const stakeTotal = await api.query.staking.erasTotalStake(activeEra);
     const bondedTotal = JSON.parse(JSON.stringify(stakeTotal.toHuman()));
-    console.log(`\x1b[1m -> Total amount of REEF tokens bonded on era: \x1b[0m\x1b[1;32m${bondedTotal}\x1b[0m`);
+    console.log(`\x1b[1m -> Total amount of REEF tokens bonded on active era ${activeEra}: \x1b[0m\x1b[1;32m${bondedTotal}\x1b[0m`);
 
     // Check Era Points and Validator Commission
     const [validators] = await Promise.all([
         api.query.staking.erasRewardPoints(lastEra),
     ]);
+
+    const validatorRewards = await api.query.staking.erasValidatorReward(lastEra);
+    const rewardsTotal = JSON.parse(JSON.stringify(validatorRewards.toHuman()));
+    console.log(`\x1b[1m -> Total amount of Rewards for era ${lastEra}: \x1b[0m\x1b[1;32m${rewardsTotal}\x1b[0m`);
 
     const totalEraPoints = JSON.parse(JSON.stringify(validators)).total;
     console.log(`\x1b[1m -> Total points for era ${lastEra}: \x1b[0m\x1b[1;32m${totalEraPoints}\x1b[0m`);
