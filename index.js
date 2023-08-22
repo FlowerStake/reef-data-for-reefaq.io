@@ -108,12 +108,13 @@ const main = async () => {
     DATA['Validators'] = [];
 
     var address = "";
+    var apy = "";
     var pts = "";
     var percent = "";
     var ident = "";
 
     for (let [key,value] of activeValidatorSet) {
-	var total = 0;
+        var total = 0;
         address = JSON.parse(JSON.stringify(key));
 	console.log(`\x1b[1m -> Validator Address: ${address}\x1b[0m`);
         pts = JSON.parse(JSON.stringify(value));
@@ -156,14 +157,18 @@ const main = async () => {
 	    }
         }
 
-        CurrentVal = {
-	    Address: address,
-            Identity: ident,
-            LastEraPoints: pts,
-            ActualCommission: percent,
-	    TotalBonded: JSON.parse(total),
-	    LessNominatorStake: JSON.parse(mindata)
-	}
+	let rawolddata = fs.readFileSync('DATA.json');
+	let olddata = JSON.parse(rawolddata);
+	let totalPoints = olddata.lastEraPoints;
+//	let totalStake = olddata.validators[].Address[address].TotalBonded;
+
+        CurrentVal = address: {
+            	Identity: ident,
+            	LastEraPoints: pts,
+            	ActualCommission: percent,
+	    	TotalBonded: JSON.parse(total),
+	    	LessNominatorStake: JSON.parse(mindata)
+	    }
 
 	DATA['Validators'].push(CurrentVal);
 
