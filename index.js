@@ -115,6 +115,7 @@ const main = async () => {
     for (let [key,value] of activeValidatorSet) {
 	var total = 0;
         address = JSON.parse(JSON.stringify(key));
+	console.log(`\x1b[1m -> Validator Address: ${address}\x1b[0m`);
         pts = JSON.parse(JSON.stringify(value));
         var validatorData = await api.query.staking.validators(address);
         percent = JSON.parse(JSON.stringify(validatorData.commission.toHuman()));
@@ -122,8 +123,16 @@ const main = async () => {
         if (id !== null) {
                 ident = polkautils.hexToString(id.info.display.raw);
         } else {
-                ident = "Unidentified";
-        }
+	        var subid = (await api.query.identity.superOf(address)).toJSON();
+        	if (subid !== null) {
+                	subident = polkautils.hexToString(subid[1].raw);
+	                id = (await api.query.identity.identityOf(subid[0])).toJSON();
+	                var ident_name = polkautils.hexToString(id.info.display.raw);
+			ident = ident_name + "/" + subident;
+	        } else {
+	                ident = "Unidentified";
+        	}
+	}
 
 	const exposures = await api.query.staking.erasStakersClipped(activeEra,address);
 
