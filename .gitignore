@@ -3,6 +3,7 @@ node_modules/
 check_staked
 VALIDATORS
 waiting.js
+DATA.json
 
 # Logs
 ######################

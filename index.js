@@ -156,12 +156,23 @@ const main = async () => {
 	    }
         }
 
-	let rawolddata = fs.readFileSync('DATA.json');
-	let olddata = JSON.parse(rawolddata);
-	let totalPoints = olddata.lastEraPoints;
-	let totalStake = olddata.validators[address].TotalBonded.split(' ');
-	let lastEraComission = olddata.validators[address].ActualCommission;
-	let totalRewards = rewardsTotal.split(' ');
+        let totalRewards = rewardsTotal.split(' ');
+	let totalPoints = "";
+        let totalStake = "";
+        let lastEraCommission = "";
+
+	if (fs.existsSync('DATA.json')) {
+	   let rawolddata = fs.readFileSync('DATA.json');
+	   let olddata = JSON.parse(rawolddata);
+	   totalPoints = olddata.lastEraPoints;
+	   totalStake = olddata.validators[address].TotalBonded.split(' ');
+	   lastEraCommission = olddata.validators[address].ActualCommission;
+	} else {
+	   totalPoints = totalEraPoints;
+	   lastEraCommission = percent;
+	   let totalStaketmp = JSON.parse(total);
+	   totalStake = totalStaketmp.split(' ');
+	}
 
 	if (totalStake[1].includes('kREEF')) {
 	   totalStake = (totalStake[0] * 1000).toFixed(0);
@@ -179,7 +190,7 @@ const main = async () => {
 
 	let validatorRewards = (pointValue * points).toFixed(2);
 
-	const lastEraCommission = lastEraComission.replace(new RegExp('%', 'g'), '');
+	lastEraCommission = lastEraCommission.replace(new RegExp('%', 'g'), '');
 
 	validatorRewards = validatorRewards - (validatorRewards * (lastEraCommission / 100));
 
