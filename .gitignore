@@ -1,7 +1,9 @@
 # Don't track content of these folders
 node_modules/
-
-
+check_staked
+VALIDATORS
+waiting.js
+DATA.json
 
 # Logs
 ######################

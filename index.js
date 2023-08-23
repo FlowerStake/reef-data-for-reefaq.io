@@ -97,26 +97,26 @@ const main = async () => {
 
     console.log(`\x1b[1m -> Era points distribution per Validator:\x1b[0m`);
 
-    const DATA = {};
-    let CurrentVal = [];
-
-    DATA['activeEra'] = activeEra;
-    DATA['activeValidators'] = activeValidators;
-    DATA['bondedTotal'] = bondedTotal;
-    DATA['rewardsTotal'] = rewardsTotal;
-    DATA['lastEraPoints'] = totalEraPoints;
-    DATA['Validators'] = [];
+    var DATA = {
+	"activeEra": activeEra,
+	"activeValidators": activeValidators,
+	"bondedTotal": bondedTotal,
+	"rewardsTotal": rewardsTotal,
+	"lastEraPoints": totalEraPoints,
+	"validators": {}
+    }
 
     var address = "";
-    var pts = "";
+    var rawapy = "";
+    var APY = "";
+    var points = "";
     var percent = "";
     var ident = "";
 
     for (let [key,value] of activeValidatorSet) {
-	var total = 0;
+        var total = 0;
         address = JSON.parse(JSON.stringify(key));
-	console.log(`\x1b[1m -> Validator Address: ${address}\x1b[0m`);
-        pts = JSON.parse(JSON.stringify(value));
+        points = JSON.parse(JSON.stringify(value));
         var validatorData = await api.query.staking.validators(address);
         percent = JSON.parse(JSON.stringify(validatorData.commission.toHuman()));
 	var id = (await api.query.identity.identityOf(address)).toJSON();
@@ -156,16 +156,59 @@ const main = async () => {
 	    }
         }
 
-        CurrentVal = {
-	    Address: address,
-            Identity: ident,
-            LastEraPoints: pts,
-            ActualCommission: percent,
-	    TotalBonded: JSON.parse(total),
-	    LessNominatorStake: JSON.parse(mindata)
+        let totalRewards = rewardsTotal.split(' ');
+	let totalPoints = "";
+        let totalStake = "";
+        let lastEraCommission = "";
+
+	if (fs.existsSync('DATA.json')) {
+	   let rawolddata = fs.readFileSync('DATA.json');
+	   let olddata = JSON.parse(rawolddata);
+	   totalPoints = olddata.lastEraPoints;
+	   totalStake = olddata.validators[address].TotalBonded.split(' ');
+	   lastEraCommission = olddata.validators[address].ActualCommission;
+	} else {
+	   totalPoints = totalEraPoints;
+	   lastEraCommission = percent;
+	   let totalStaketmp = JSON.parse(total);
+	   totalStake = totalStaketmp.split(' ');
 	}
 
-	DATA['Validators'].push(CurrentVal);
+	if (totalStake[1].includes('kREEF')) {
+	   totalStake = (totalStake[0] * 1000).toFixed(0);
+	} else if (totalStake[1].includes('MREEF')) {
+	   totalStake = (totalStake[0] * 1000000).toFixed(0);
+	}
+
+	if (totalRewards[1].includes('kREEF')) {
+           totalRewards = (totalRewards[0] * 1000).toFixed(0);
+        } else if (totalRewards[1].includes('MREEF')) {
+           totalRewards = (totalRewards[0] * 1000000).toFixed(0);
+        }
+
+	let pointValue = (totalRewards / totalPoints).toFixed(2);
+
+	let validatorRewards = (pointValue * points).toFixed(2);
+
+	lastEraCommission = lastEraCommission.replace(new RegExp('%', 'g'), '');
+
+	validatorRewards = validatorRewards - (validatorRewards * (lastEraCommission / 100));
+
+	rawapy = ((validatorRewards * 365) / totalStake).toFixed(5);
+
+	APY = (rawapy * 100).toFixed(2);
+
+        var CurrentVal = {
+	    	  Identity: ident,
+		  LastEraPoints: points,
+		  ActualCommission: percent,
+		  LastEraAPY: APY+"%",
+		  TotalBonded: JSON.parse(total),
+		  LastEraTotalBonded: totalStake,
+		  LessNominatorStake: JSON.parse(mindata)
+	}
+
+	DATA.validators[address] = CurrentVal;
 
 	CurrentVal = {};
 
