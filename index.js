@@ -165,7 +165,7 @@ const main = async () => {
 	   let rawolddata = fs.readFileSync('DATA.json');
 	   let olddata = JSON.parse(rawolddata);
 	   totalPoints = olddata.lastEraPoints;
-	   totalStake = olddata.validators[address].TotalBonded.split(' ');
+	   totalStake = olddata.validators[address].LastEraTotalBonded;
 	   lastEraCommission = olddata.validators[address].ActualCommission;
 	} else {
 	   totalPoints = totalEraPoints;
@@ -196,13 +196,35 @@ const main = async () => {
 
 	rawapy = ((validatorRewards * 365) / totalStake).toFixed(5);
 
-	APY = (rawapy * 100).toFixed(2);
+	lastEraAPY = (rawapy * 100).toFixed(2);
+
+        totalPoints = totalEraPoints;
+        lastEraCommission = percent;
+        let totalStaketmp = JSON.parse(total);
+        totalStake = totalStaketmp.split(' ');
+
+        if (totalStake[1].includes('kREEF')) {
+           totalStake = (totalStake[0] * 1000).toFixed(0);
+        } else if (totalStake[1].includes('MREEF')) {
+           totalStake = (totalStake[0] * 1000000).toFixed(0);
+        }
+
+        validatorRewards = (pointValue * points).toFixed(2);
+
+        let currentEraCommission = percent.replace(new RegExp('%', 'g'), '');
+
+        validatorRewards = validatorRewards - (validatorRewards * (currentEraCommission / 100));
+
+        rawapy = ((validatorRewards * 365) / totalStake).toFixed(5);
+
+        let currentEraAPY = (rawapy * 100).toFixed(2);
 
         var CurrentVal = {
 	    	  Identity: ident,
 		  LastEraPoints: points,
 		  ActualCommission: percent,
-		  LastEraAPY: APY+"%",
+		  LastEraAPY: lastEraAPY+"%",
+		  CurrentEraAPY: currentEraAPY+"%",
 		  TotalBonded: JSON.parse(total),
 		  LastEraTotalBonded: totalStake,
 		  LessNominatorStake: JSON.parse(mindata)
